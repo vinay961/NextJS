@@ -1,36 +1,42 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+## Token vs. Cookies in Authentication
 
-## Getting Started
+**Token:**  
+Tokens are commonly used for stateless authentication. They are sent with each request to verify the user's identity. While tokens can be stored in places like `localStorage` or `sessionStorage`, this exposes them to XSS (Cross-Site Scripting) attacks.
 
-First, run the development server:
+**Cookie:**  
+Cookies are small pieces of data stored on the client and automatically sent with every HTTP request. By setting cookies as `HttpOnly`, they cannot be accessed via JavaScript, providing protection against XSS attacks. However, if not properly configured, cookies can be vulnerable to CSRF (Cross-Site Request Forgery) attacks.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+**Why store tokens in cookies instead of the response body?**  
+Storing tokens in `HttpOnly` cookies enhances security by preventing client-side scripts from accessing them, reducing the risk of XSS attacks. Cookies are also automatically included in every HTTP request, simplifying authentication for subsequent requests. Additionally, cookie attributes like `Secure` and `SameSite` can be configured to help protect against CSRF attacks.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+## Understanding XSS and CSRF Attacks
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### XSS (Cross-Site Scripting)
 
-## Learn More
+- **What is it?**  
+  XSS attacks occur when attackers inject malicious scripts into web pages viewed by other users.
+- **Risk:**  
+  If sensitive data (like authentication tokens) is stored in JavaScript-accessible locations, attackers can steal this data.
+- **Mitigation in Next.js:**  
+  Use `HttpOnly` cookies to store tokens, making them inaccessible to JavaScript and reducing the risk of token theft via XSS.
 
-To learn more about Next.js, take a look at the following resources:
+### CSRF (Cross-Site Request Forgery)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **What is it?**  
+  CSRF attacks trick authenticated users into submitting unwanted requests to a web application.
+- **Risk:**  
+  Since cookies are sent automatically with every request, attackers can exploit this to perform actions on behalf of users.
+- **Mitigation in Next.js:**  
+  Set cookie attributes such as `SameSite=Strict` or `SameSite=Lax`, and use anti-CSRF tokens for sensitive operations. Always configure cookies with `httpOnly`, `secure`, and `sameSite` flags in your Next.js API routes.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## Best Practices in Next.js
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- **Store tokens in `HttpOnly` cookies** to protect against XSS.
+- **Configure cookies securely** (`httpOnly`, `secure`, `sameSite`) to protect against CSRF.
+- **Use API routes** to set and validate cookies, and avoid exposing sensitive tokens to the client-side.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+By following these practices, you can build a secure authentication system in your Next.js application that leverages the strengths
