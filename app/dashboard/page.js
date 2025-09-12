@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import styles from './Dashboard.module.css';
 
 export default function Dashboard() {
   const router = useRouter();
@@ -16,56 +17,32 @@ export default function Dashboard() {
     getUser();
   }, [router]);
 
-  if (!user)
-    return (
-      <div
-        style={{
-          height: '100vh',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          backgroundColor: '#f3f4f6',
-          fontSize: '1.2rem',
-          color: '#555',
-        }}
-      >
-        Loading...
-      </div>
-    );
+  if (!user) {
+    return <div className={styles.loading}>Loading...</div>;
+  }
 
   return (
-    <div
-      style={{
-        minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: '#f3f4f6',
-        padding: '2rem',
-      }}
-    >
-      <div
-        style={{
-          width: '100%',
-          maxWidth: '500px',
-          backgroundColor: 'white',
-          padding: '2rem',
-          borderRadius: '12px',
-          boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-          textAlign: 'center',
-        }}
-      >
-        <h1
-          style={{
-            fontSize: '1.8rem',
-            fontWeight: 'bold',
-            marginBottom: '1rem',
-            color: '#333',
+    <div className={styles.page}>
+      <div className={styles.card}>
+        <h1 className={styles.title}>Welcome, {user.name}</h1>
+        <p className={styles.text}>Your email: {user.email}</p>
+
+        <button
+          onClick={async () => {
+            const res = await fetch('/api/logout', { method: 'POST' });
+            if (res.ok) router.push('/login');
           }}
+          className={styles.logoutBtn}
         >
-          Welcome, {user.name}
-        </h1>
-        <p style={{ fontSize: '1rem', color: '#666' }}>Your email: {user.email}</p>
+          Logout
+        </button>
+
+        <button
+          onClick={() => router.push('/employee')}
+          className={styles.AddEmployeeBtn}
+        >
+          Add Employee
+        </button>
       </div>
     </div>
   );

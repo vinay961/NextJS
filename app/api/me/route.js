@@ -1,12 +1,11 @@
 // Here User is authenticated using the token stored in the cookie.
 import { NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
-import cookie from "cookie";
 import dbConnect from "@/lib/mongodb";
 import User from "@/models/User";
 
 export async function GET(req) {
-    const { cookies } = req;
+    const { cookies } = req; // Access cookies from the request, which we added in the login and register routes.
     const token = cookies.get("token")?.value;
 
     if (!token) {

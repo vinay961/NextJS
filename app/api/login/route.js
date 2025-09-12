@@ -8,6 +8,7 @@ import User from "@/models/User";
 
 async function POST(req){
     const {email, password} = await req.json();
+    console.log(email, password);
 
     if(!email || !password){
         return NextResponse.json({error: "Please fill all the fields"}, {status: 400});
@@ -38,3 +39,5 @@ async function POST(req){
         return NextResponse.json({error: "Internal Server Error"}, {status: 500});
     }
 }
+
+export { POST };
